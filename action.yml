@@ -1,0 +1,59 @@
+name: "project beta remnve"
+description: 'GitHub beta projects status field automation for Issues and Pull Requests, removes closed issues from a Project'
+inputs:
+  gh_token:
+    description: 'Permission token that grants permission to the GitHub API.'
+    required: true
+    default: ""
+  organization:
+    description: 'Organization the project is stored in'
+    required: false
+    default: ""
+  user:
+    description: 'User the project is stored in'
+    required: false
+    default: ""
+  project_id:
+    description: 'Project ID owned by the organization'
+    required: true
+    default: ""
+  resource_node_id:
+    description: 'Defines the global node ID of the GitHub issue or pull request'
+    required: true
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: "Authenticate gh cli"
+      shell: bash
+      run: echo "${{ inputs.gh_token }}" | gh auth login --with-token
+
+    - name: "Check if User or Organization is set"
+      if: inputs.organization == '' && inputs.user == ''
+      uses: actions/github-script@v3
+      with:
+        script: |
+          core.setFailed('either user or organization is not specified.')
+
+    - name: "Check if User and Organization are set"
+      if: inputs.organization != '' && inputs.user != ''
+      uses: actions/github-script@v3
+      with:
+        script: |
+          core.setFailed('user and organization field is set. Only one is supported.')
+
+    - name: "Execute Organization automation"
+      if: inputs.organization != ''
+      working-directory: ${{ github.action_path }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
+      shell: bash
+      run: "${{ github.action_path }}/entrypoint.sh \"${{ inputs.organization }}\" \"${{ inputs.project_id }}\" \"${{ inputs.resource_node_id }}\""
+
+    - name: "Execute User automation"
+      if: inputs.user != ''
+      working-directory: ${{ github.action_path }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh_token }}
+      shell: bash
+      run: "${{ github.action_path }}/entrypoint_user.sh \"${{ inputs.user }}\" \"${{ inputs.project_id }}\" \"${{ inputs.resource_node_id }}\""
