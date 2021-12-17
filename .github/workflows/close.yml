@@ -15,7 +15,7 @@ jobs:
       - name: 'Removed issue'
         uses: matthewmayer/project-beta-remove@v0.0.1
         with:
-          gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          gh_token: ${{ secrets.PROJECTS_TOKEN }}
           user: matthewmayer
           # organization: sample-org
           project_id: 1
