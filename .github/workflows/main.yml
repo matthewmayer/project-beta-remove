@@ -1,0 +1,37 @@
+name: Project automations
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+  issues:
+    types:
+      - opened
+      - reopened
+jobs:
+  issue_opened_and_reopened:
+    name: issue_opened_and_reopened
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened' || github.event.action == 'reopened'
+    steps:
+      - name: 'Move issue to "Todo"'
+        uses: leonsteinhaeuser/project-beta-automations@v1.0.1
+        with:
+          gh_token: ${{ secrets.PROJECTS_TOKEN }}
+          user: matthewmayer
+          project_id: 1
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: "Todo"
+  pr_opened_and_reopened:
+    name: pr_opened_and_reopened
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
+    steps:
+      - name: 'Move issue to "Todo"'
+        uses: leonsteinhaeuser/project-beta-automations@v1.0.1
+        with:
+          gh_token: ${{ secrets.PROJECTS_TOKEN }}
+          user: matthewmayer
+          project_id: 1
+          resource_node_id: ${{ github.event.pull_request.node_id }}
+          status_value: "Todo"
