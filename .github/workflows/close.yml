@@ -1,0 +1,22 @@
+name: Remove issue from project when closed
+on:
+  issues:
+    types:
+      - closed
+  pull_request:
+    types:
+      - closed
+jobs:
+  issue_closed:
+    name: issue_closed
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'closed'
+    steps:
+      - name: 'Removed issue'
+        uses: matthewmayer/project-beta-remove@v0.0.1
+        with:
+          gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          user: matthewmayer
+          # organization: sample-org
+          project_id: 1
+          resource_node_id: ${{ github.event.issue.node_id }}
